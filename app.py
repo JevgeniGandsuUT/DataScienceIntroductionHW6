@@ -95,7 +95,7 @@ st.set_page_config(page_title="Loomulik iive Eestis", layout="wide")
 st.title("Loomulik iive Eesti maakondades")
 st.write(
     "Töölaud näitab Eesti maakondade loomulikku iivet aastatel 2014-2023. "
-    "Loomulik iive on elussündide ja surmade vahe."
+    "Loomulik iive tähendab elussündide ja surmade vahet."
 )
 
 merged_data = prepare_data()
@@ -111,11 +111,11 @@ min_row = year_data.loc[year_data["Loomulik iive"].idxmin()]
 metric_1, metric_2, metric_3 = st.columns(3)
 metric_1.metric("Loomulik iive kokku", total_change)
 metric_2.metric(
-    "Kõrgeim maakond",
+    "Suurim väärtus",
     f"{max_row['Maakond']}: {int(max_row['Loomulik iive'])}",
 )
 metric_3.metric(
-    "Madalaim maakond",
+    "Väikseim väärtus",
     f"{min_row['Maakond']}: {int(min_row['Loomulik iive'])}",
 )
 
