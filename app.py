@@ -81,7 +81,7 @@ def plot_map(df, year):
         column="Loomulik iive",
         ax=ax,
         legend=True,
-        cmap="viridis",
+        cmap="RdYlGn",
         legend_kwds={"label": "Loomulik iive"},
     )
     ax.set_title(f"Loomulik iive maakonniti aastal {year}")
@@ -101,6 +101,7 @@ st.write(
 merged_data = prepare_data()
 years = sorted(merged_data["Aasta"].unique())
 selected_year = st.sidebar.selectbox("Vali aasta", years, index=len(years) - 1)
+st.sidebar.caption("Andmed: Statistikaamet, tabel RV032")
 
 year_data = get_data_for_year(merged_data, selected_year)
 total_change = int(year_data["Loomulik iive"].sum())
@@ -128,7 +129,17 @@ with map_col:
     st.subheader(f"Kaart aastal {selected_year}")
     fig = plot_map(year_data, selected_year)
     st.pyplot(fig)
+    st.caption(
+        "Negatiivne väärtus tähendab, et surmasid oli rohkem kui elussünde. "
+        "Positiivne väärtus tähendab, et elussünde oli rohkem kui surmasid."
+    )
 
 with table_col:
     st.subheader(f"Andmed aastal {selected_year}")
     st.dataframe(table_data, use_container_width=True, hide_index=True)
+    st.download_button(
+        "Laadi tabel CSV-na alla",
+        table_data.to_csv(index=False).encode("utf-8"),
+        file_name=f"loomulik_iive_{selected_year}.csv",
+        mime="text/csv",
+    )
