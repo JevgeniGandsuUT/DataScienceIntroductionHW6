@@ -93,17 +93,42 @@ def plot_map(df, year):
 st.set_page_config(page_title="Loomulik iive Eestis", layout="wide")
 
 st.title("Loomulik iive Eesti maakondades")
+st.write(
+    "Töölaud näitab Eesti maakondade loomulikku iivet aastatel 2014-2023. "
+    "Loomulik iive on elussündide ja surmade vahe."
+)
 
 merged_data = prepare_data()
 years = sorted(merged_data["Aasta"].unique())
 selected_year = st.sidebar.selectbox("Vali aasta", years, index=len(years) - 1)
 
 year_data = get_data_for_year(merged_data, selected_year)
-fig = plot_map(year_data, selected_year)
-st.pyplot(fig)
+total_change = int(year_data["Loomulik iive"].sum())
+max_row = year_data.loc[year_data["Loomulik iive"].idxmax()]
+min_row = year_data.loc[year_data["Loomulik iive"].idxmin()]
+
+metric_1, metric_2, metric_3 = st.columns(3)
+metric_1.metric("Loomulik iive kokku", total_change)
+metric_2.metric(
+    "Kõrgeim maakond",
+    f"{max_row['Maakond']}: {int(max_row['Loomulik iive'])}",
+)
+metric_3.metric(
+    "Madalaim maakond",
+    f"{min_row['Maakond']}: {int(min_row['Loomulik iive'])}",
+)
 
 table_data = year_data[["Maakond", "Loomulik iive"]].sort_values(
     "Loomulik iive", ascending=False
 )
-st.subheader(f"Andmed aastal {selected_year}")
-st.dataframe(table_data, use_container_width=True, hide_index=True)
+
+map_col, table_col = st.columns([2, 1])
+
+with map_col:
+    st.subheader(f"Kaart aastal {selected_year}")
+    fig = plot_map(year_data, selected_year)
+    st.pyplot(fig)
+
+with table_col:
+    st.subheader(f"Andmed aastal {selected_year}")
+    st.dataframe(table_data, use_container_width=True, hide_index=True)
